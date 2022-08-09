@@ -56,25 +56,45 @@ class ChessBoard:
             self.selected_location = l
 
     def validate_move(self, destination):
-        s_v = self.matrix[self.selected_location[0]][self.selected_location[1]]
         s_l = self.selected_location
+        s_v = self.matrix[s_v[0]][s_v[1]]
         d_l = self.read_board_location(destination)
+        d_v = self.matrix[d_l[0]][d_l[1]]
         match s_v:
             case "K":
+                for white in self.white_pieces_locations:
+                    if d_v == self.matrix[white[0]][white[1]]:
+                        return False
                 if d_l == ([s_l[0] + 1, s_l[1] + 1] | [s_l[0] + 1, s_l[1]] | [s_l[0], s_l[1] + 1] |
                 [s_l[0], s_l[1] - 1] | [s_l[0] - 1, s_l[1]] | [s_l[0], s_l[1] - 1]):
                     return True
+                return False
+            case "P":
+                for white in self.white_pieces_locations:
+                    if d_v == self.matrix[white[0]][white[1]]:
+                        return False
+                for black in self.black_pieces_locations:
+                    if d_v == self.matrix[black[0]][black[1]] and d_l == ([s_l[0] + 1, s_l[1] + 1] |
+                    [s_l[0] + 1, s_l[1] - 1]):
+                        return True
+                if d_l == [s_l[0] + 1, s_l[1]]:
+                    return True
+                return False
 
     def move_piece(self, destination):
         s_v = self.matrix[self.selected_location[0]][self.selected_location[1]]
         d = self.read_board_location(destination)
-        match s_v:
-            case "K":
-                if self.validate_move(destination):
-                    (self.matrix[self.selected_location[0]][self.selected_location[1]],
-                    self.matrix[d[0]][d[1]]) = (
-                    self.matrix[d[0]][d[1]],
-                    self.matrix[self.selected_location[0]][self.selected_location[1]])
+        if self.validate_move(destination):
+            if destination == " ":
+                (self.matrix[self.selected_location[0]][self.selected_location[1]],
+                self.matrix[d[0]][d[1]]) = (
+                self.matrix[d[0]][d[1]],
+                self.matrix[self.selected_location[0]][self.selected_location[1]])
+            else:
+                (self.matrix[self.selected_location[0]][self.selected_location[1]],
+                self.matrix[d[0]][d[1]]) = (
+                " ",
+                self.matrix[self.selected_location[0]][self.selected_location[1]])
 
 
 chess = ChessBoard()
